@@ -10,13 +10,13 @@
 ?>
 
 <article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
-	<header class="entry-header">
+	<header class="entry-header dn">
 		<?php the_title( '<h1 class="entry-title">', '</h1>' ); ?>
 	</header><!-- .entry-header -->
 
 	<?php noddenhus_post_thumbnail(); ?>
 
-	<div class="entry-content">
+	<div class="entry-content mt5 pt4">
 		<?php
 		the_content();
 
@@ -45,7 +45,7 @@
 					),
 					wp_kses_post( get_the_title() )
 				),
-				'<span class="edit-link">',
+				'<span class="edit-link dn">',
 				'</span>'
 			);
 			?>

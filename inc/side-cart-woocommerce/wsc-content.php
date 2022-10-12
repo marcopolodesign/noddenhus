@@ -28,9 +28,9 @@ do_action( 'woocommerce_before_cart_contents' ); ?>
 	<div class="wsc-content">
 		
 		<?php if(WC()->cart->is_empty()): ?>
-			<span class="wsc-ecnt gt f1 mt5-ns w-max">Tu carrito esta vacío.</span>
-			<a href="/shop" class="main-cta bg-black mt3 db w-max">
-				<p class="white pa3">Agregar productos</p>
+			<span class="wsc-ecnt gt f1 mt5-ns w-max" style="font-size: 2rem;">Tu carrito esta vacío.</span>
+			<a href="/grid-shop" class="main-cta bg-black mt3 db w-max cart-no-products no-deco">
+				<p class="white">Agregar productos</p>
 			</a>
 		<?php else: ?>
 

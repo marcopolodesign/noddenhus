@@ -1,48 +1,3 @@
-@font-face {
-  font-family: 'GT Super Display';
-  src: url('fonts/GTSuperDisplay-Light.woff2') format('woff2'),
-    url('fonts/GTSuperDisplay-Light.woff') format('woff');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'MessinaSansWeb';
-  src: url('fonts/MessinaSansWeb-Bold.woff2') format('woff2'),
-    url('fonts/MessinaSansWeb-Bold.woff') format('woff');
-  font-weight: bold;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'MessinaSansWeb Book';
-  src: url('fonts/MessinaSansWeb-Book.woff2') format('woff2'),
-    url('fonts/MessinaSansWeb-Book.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'MessinaSansWeb';
-  src: url('fonts/MessinaSansWeb-Light.woff2') format('woff2'),
-    url('fonts/MessinaSansWeb-Light.woff') format('woff');
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'MessinaSansWeb';
-  src: url('fonts/MessinaSansWeb-Regular.woff2') format('woff2'),
-    url('fonts/MessinaSansWeb-Regular.woff') format('woff');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-
 * {
   text-rendering: optimizeLegibility !important;
   -webkit-font-smoothing: antialiased !important;
@@ -714,14 +669,14 @@ p.lh1 {
 .faq-item p:last-child,
 .faq-item p:nth-child(2) {
   color: var(--darkgrey);
-  margin-top: 10px;
+  /* margin-top: 10px; */
 }
 
 .faq-item {
   max-height: min-content;
   max-height: -moz-min-content;
   max-height: intrinsic;
-  transition: all 0.3s ease;
+  /* transition: all 0.3s ease; */
   background-color: var(--lightpink);
   cursor: pointer;
 }
@@ -735,7 +690,7 @@ p.lh1 {
 }
 
 .faq-item[area-expanded='true'] p:not(:first-child) {
-  transition: all 0.3s ease;
+  /* transition: all 0.3s ease; */
 }
 
 .faq-question {
@@ -748,7 +703,7 @@ p.lh1 {
   right: 10px;
   transform: translateY(-50%);
   content: '';
-  background-image: url('/wp-content/uploads/2020/01/arrow-pink.svg');
+  /* background-image: url('/wp-content/uploads/2020/01/arrow-pink.svg'); */
   height: 100%;
   transition: all 0.3s ease;
   width: 8.5px;
@@ -1030,6 +985,10 @@ span.white {
     display: none;
   }
 
+  .desktop {
+    display: none;
+  }
+
   /* ---- MARGINS------ */
 
   .mv6 {
@@ -1058,5 +1017,9 @@ span.white {
   .timeline-item h3 {
     text-align: left;
     padding-left: 20px;
+  }
+
+  .column-mobile {
+    flex-direction: column;
   }
 }

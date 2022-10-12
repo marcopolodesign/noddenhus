@@ -99,7 +99,7 @@ jQuery(document).ready(function($){
 						$( document.body ).trigger( 'added_to_cart', [ response.fragments, response.cart_hash, atc_btn ] );
 					}
 					else if(response.error){
-						show_notice('error',response.error)
+						// show_notice('error',response.error)
 					}
 					else{
 						console.log(response);
@@ -159,7 +159,7 @@ jQuery(document).ready(function($){
 		update_cart(cart_key,0);
 	})
 	
-	$(document).on('change','.input-text.qty.text',function(e){
+	$(document).on('change','.wsc-product .input-text.qty.text',function(e){
 		e.preventDefault();
 		block_cart();
 		var quantity = $(this).val();

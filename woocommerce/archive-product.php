@@ -22,6 +22,8 @@ defined( 'ABSPATH' ) || exit;
 
 get_header( 'shop' );
 
+
+
 $isGrid = is_page('Grid Shop') ? 'flex flex-wrap jic has-grid container' : "";
 $isShop = is_shop() ? 'bg-white' : "";
 
@@ -35,17 +37,47 @@ $isShop = is_shop() ? 'bg-white' : "";
 // do_action( 'woocommerce_before_main_content' );
 
 ?>
-<main id="main" data-barba="container" data-barba-namespace="shop" class="shop mt5 <?php echo $isShop;?>">
+<main id="main" data-barba="container" data-barba-namespace="shop" class="shop mt5 <?php echo $isShop;?>" header-color="black">
 
+<?php	
+	$category_id = $cat->term_id; 
+	$category = get_queried_object();
+	$categoryID = $category->term_id;
 
-
-<?php if (is_shop()) : endif; ?>
+	$args = array(
+				'taxonomy'     => 'product_cat',
+				'orderby'      => 'date',
+				'order'=> "DESC",
+				'show_count'   => 1, // 1 for yes, 0 for no
+				'pad_counts'   => 1,
+				'hierarchical' => 0,
+				'title_li'     => '',
+				'hide_empty'   => 0, 
+				'exclude' => 		array(32),
+				'parent' => 0, 
+				// 'child_of' => $categoryID	
+				);
+	
+				$all_categories = get_categories( $args );	
+?>
 
 
 <header class="woocommerce-products-header">
 	<?php if ( apply_filters( 'woocommerce_show_page_title', true ) ) : ?>
 		<h1 class="woocommerce-products-header__title page-title tc domaine "><?php woocommerce_page_title(); ?></h1>
+		<div class="shop-descrip center measure-wide mt2 tc main-font f3"><?php  echo get_the_content(149);?></div>
 	<?php endif; ?>
+
+	<div class="shop-nav flex container jic center w-max mt4">
+		<?php 
+		foreach ($all_categories as $cat) :
+			$category_id = $cat->term_id; 
+			if ($cat->name != 'Uncategorized' && $cat->count > 0):
+			echo '<p class="has-after anchor black mh3"> ' . $cat->name  . ' </p>';
+			endif;
+		endforeach; wp_reset_postdata()?>
+	</div>
+
 
 
 
@@ -65,15 +97,18 @@ $isShop = is_shop() ? 'bg-white' : "";
 	// do_action( 'woocommerce_archive_description' );
 	?>
 </header>
-
-	<div class="views flex center mt4 jic w-max">
-			<a href="/shop" class="scroll active mh3">
+	<div class="views flex jic w-max fixed bottom-0 right-0 pa2 ma4 z-5 bg-white" style="border-radius: 100px;">
+			<a href="/shop" class="scroll mh3 
+				<?php	if (is_shop()) : echo 'active'; endif; ?>
+			">
 				<svg width="27" height="20" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
 					<path d="M0 0H2V2H0V0ZM0 5H2V7H0V5ZM0 10H2V12H0V10ZM16 2V0H4.023V2H14.8H16ZM4 5H16V7H4V5ZM4 10H16V12H4V10Z" fill="#AAAAAA"/>
 				</svg>
 
 			</a>
-			<a href="/grid-shop" class="grid mh3">
+			<a href="/grid-shop" class="grid mh3
+			<?php	if (!is_shop()) : echo 'active'; endif; ?>
+			">
 				<svg width="27" height="27" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<path d="M5.28571 0.85H1.85714C1.59003 0.85 1.33386 0.956109 1.14499 1.14499C0.956109 1.33386 0.85 1.59003 0.85 1.85714V5.28571C0.85 5.55283 0.956109 5.809 1.14499 5.99787C1.33386 6.18675 1.59003 6.29286 1.85714 6.29286H5.28571C5.55283 6.29286 5.809 6.18675 5.99787 5.99787C6.18675 5.809 6.29286 5.55283 6.29286 5.28571V1.85714C6.29286 1.59003 6.18675 1.33386 5.99787 1.14499C5.809 0.956109 5.55283 0.85 5.28571 0.85ZM2.00714 5.13571V2.00714H5.13571V5.13571H2.00714Z" fill="#AAAAAA" stroke="#AAAAAA" stroke-width="0.3"/>
 						<path d="M12.1429 0.85H8.71429C8.44718 0.85 8.19101 0.956109 8.00213 1.14499C7.81326 1.33386 7.70715 1.59003 7.70715 1.85714V5.28571C7.70715 5.55283 7.81326 5.809 8.00213 5.99787C8.19101 6.18675 8.44718 6.29286 8.71429 6.29286H12.1429C12.41 6.29286 12.6661 6.18675 12.855 5.99787C13.0439 5.809 13.15 5.55283 13.15 5.28571V1.85714C13.15 1.59003 13.0439 1.33386 12.855 1.14499C12.6661 0.956109 12.41 0.85 12.1429 0.85ZM8.86429 5.13571V2.00714H11.9929V5.13571H8.86429Z" fill="#AAAAAA" stroke="#AAAAAA" stroke-width="0.3"/>
@@ -86,39 +121,10 @@ $isShop = is_shop() ? 'bg-white' : "";
 
 <?php if (is_shop() || is_page('Grid Shop')) { ?>
 
- <?php	
-		$taxonomy     = 'product_cat';
-		$orderby      = 'name';  
-		$show_count   = 0;      // 1 for yes, 0 for no
-		$pad_counts   = 0;      // 1 for yes, 0 for no
-		$hierarchical = 1;      // 1 for yes, 0 for no  
-		$title        = '';  
-		$empty        = 0;
-
-		$category_id = $cat->term_id; 
-		$category = get_queried_object();
-		$categoryID = $category->term_id;
-
-
-
-		$args = array(
-					'taxonomy'     => $taxonomy,
-					'orderby'      => $orderby,
-					'show_count'   => $show_count,
-					'pad_counts'   => $pad_counts,
-					'hierarchical' => $hierarchical,
-					'title_li'     => $title,
-					'hide_empty'   => $empty, 
-					'exclude' => 		array(32), 
-					// 'child_of' => $categoryID
-		); 
-	 ?>
-
 
 
 <section class="shop-container overflow-hidden" header-color="white">
-
-	<?php $all_categories = get_categories( $args );
+	<?php 
 		foreach ($all_categories as $cat) {
 			$category_id = $cat->term_id; 
 			$thumbnail_id = get_woocommerce_term_meta($category_id, 'thumbnail_id', true );
@@ -126,72 +132,22 @@ $isShop = is_shop() ? 'bg-white' : "";
 			$link = get_term_link( $cat->slug, 'product_cat' );?>
 
 		<?php if($cat->count > 0 && !($category_id === 21) ) : ?>
-			<div class="cat-header mv5 <?php echo $cat->name; ?>">
-					<?php if ($image) : ?>
-						<div class="cat-logo center">
-							<img src="<?php echo $image; ?>">
-						</div>
+			<div class="cat-header mv5" id="<?php echo $cat->slug; ?>">
 						<div class="cat-description mv4">
-							<p class="measure tc simbaltch center">
-								<?php echo $cat->description ; ?>
-							</p>
+							<h2 class="measure tc center">
+								<?php echo $cat->name ; ?>
 						</div>
-
-						<div class="cat-variety flex justify-center flex-column center tc">
-							<!-- <p class="white tc">Variedades:</p> -->
-
-							<div class="flex justify-center center w-50-ns">
-							
-							<?php 
-								$productArgs = array(
-								'post_type' => 'product',
-								'orderby' => 'date',
-								'order' => 'DESC',
-								'product_cat' => $cat->name,
-								'posts_per_page' => -1,
-							);
-
-
-							$products = new WP_Query( $productArgs ); if ( $products->have_posts() ) :
-							while ( $products->have_posts() ) : $products->the_post(); 
-							
-							$variable = get_field('custom_link');
-							$link = get_permalink();
-							?>
-
-							
-			
-							<a href="<?php
-							if (get_field('custom_link')) : echo the_field('custom_link');
-							else : echo $link; 
-							endif;	?>" class="tc mh3 anchor simbaltch no-decoration"><?php the_field('varietal') ;?></a>	
-	
-			
-					<?php	endwhile;
-						wp_reset_postdata();
-						endif; ?>
-						
-
-						</div>
-						</div>
-					<?php endif; 
-					
-					
-					?>
-						
 
 				<div class="cat-products-container <?php echo $isGrid;?> ">
 					<?php $productArgs = array(
 						'post_type' => 'product',
 						'orderby' => 'date',
-						'order' => 'ASC',
+						'order' => 'DESC',
 						'product_cat' => $cat->name,
 						'posts_per_page' => -1,
 						// 'paged' => get_query_var( 'paged' ),
 					);
-					// Set the query
-					$products = new WP_Query( $productArgs ); if ( $products->have_posts() ) :
-					while ( $products->have_posts() ) : $products->the_post();
+					$products = new WP_Query( $productArgs ); if ( $products->have_posts() ) : while ( $products->have_posts() ) : $products->the_post();
 						
 			
 					if (is_shop()) : 

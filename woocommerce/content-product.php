@@ -66,7 +66,7 @@ class="is-product pv4 mv4 <?php the_title();?>"<?php wc_product_class( '', $prod
 				<div class="flex items-center justify-between pa4">
 					<div>
 						<h2 class="f2 black"><?php the_title();?></h2>
-						<p class="mt1 f6"><?php echo wp_trim_words( get_the_content(), 21 , '...' ); ?></p>
+						<p class="mt1 f6 pr4-ns"><?php echo wp_trim_words( get_the_excerpt(), 21 , '...' ); ?></p>
 					</div>
 
 					<div class="inline-flex">

@@ -1,6 +1,13 @@
 let pageName = document.querySelector('[data-barba=container]');
 const windowHeight = window.innerHeight;
 
+// MP Creds
+// Public Key = TEST-a56675b5-fa86-45ff-a5be-3b3bbedcc9ac;
+// Access TOken = TEST-5796144390148198-090919-0b3534e1a6b7e95874cfc5b72c6cbdca-819905563;
+
+// Public Key Prod = APP_USR-5baec958-fb15-4f92-9de9-282a19111f3a;
+// Access Token Prod  = APP_USR-5796144390148198-090919-91a44b42eb4d27b68e801e254ed8d17f-819905563;
+
 
 const runScripts = () => {
   pageName = document.querySelector('[data-barba=container]');
@@ -47,7 +54,6 @@ const runScripts = () => {
   }
 
 };
-
   
 
   function allCursor() {
@@ -125,8 +131,7 @@ const runScripts = () => {
       moveCursor(event.pageX, event.pageY);
     });
   }
-  
-  
+    
 
   const initScripts = () => {
     if (pageName.classList.contains('home')) {
@@ -137,9 +142,23 @@ const runScripts = () => {
   postAnimations();
   setTimeout(() => {
       allCursor();
-  }, 1000);
+  }, 3000);
 }
 
+const headerColor = () => {
+  let color = document.querySelector('main').getAttribute('header-color');
+  if (color) {
+      document.querySelector('header').classList.add(color);
+  }
+
+
+  let isCheckout = document.querySelector('.checkout-general-container');
+  if (isCheckout) {
+    document.querySelector('header').classList.add('black')
+  }
+}
+
+headerColor();
 
 const imageProducts = () => {
   document.addEventListener('scroll', () => {
@@ -176,13 +195,13 @@ const imageProducts = () => {
 
 const shopColor = () => {
   let backgroundChange = Array.prototype.slice.call(document.querySelectorAll(".is-product[background-color]"));
+  let combos = document.querySelector('#combos')
   let main = document.querySelector('#main')
   let header = document.querySelector('header')
 
     document.addEventListener('scroll', () => {
       const pixels = window.pageYOffset;
       backgroundChange.forEach((change, i) => {
-
 
           if ((pixels + windowHeight / 2 > backgroundChange[0].offsetTop) && pixels + windowHeight / 2 < backgroundChange[1].offsetTop) {
 
@@ -195,18 +214,100 @@ const shopColor = () => {
             main.style.backgroundColor = backgroundChange[1].getAttribute('background-color');
             header.style.backgroundColor = backgroundChange[1].getAttribute('background-color');
 
-          } else if (pixels + windowHeight / 2 > backgroundChange[2].offsetTop) {
+          } else if (pixels + windowHeight / 2 > backgroundChange[2].offsetTop && pixels + windowHeight/2 < combos.offsetTop) {
             main.style.backgroundColor = backgroundChange[2].getAttribute('background-color');
             header.style.backgroundColor = backgroundChange[2].getAttribute('background-color');
           }
         
         else {
           main.style.backgroundColor = '';
+          header.style.backgroundColor = '';
         }
       }) 
 
     })
 }
+
+const homeVideo = () => {
+  let homeStarter = document.querySelector('.home-starter');
+  let video = document.querySelector('video');
+
+  video.addEventListener('click' , ()=> {
+    video.removeAttribute('muted')
+    video.volume = 1.0
+
+    console.log('clicking')
+  })
+
+  let hideText = () => {
+     setTimeout(() => {
+    homeStarter.classList.add('viewing');
+    video.volume = 0.3
+    
+    },6000)
+  }
+
+
+  hideText();
+ 
+
+  homeStarter.addEventListener('mousemove', () => {
+    homeStarter.classList.remove('viewing');
+    video.volume = 0
+    hideText();
+  })
+}
+
+
+
+let menu = document.querySelector('.menu-container')
+let menuContent = document.querySelector('#side-menu');
+let linkContainer = document.querySelectorAll('ul.menu-nav > li')
+let menuLinks = document.querySelectorAll('ul.menu-nav > li > a')
+let menuBg = menu.querySelector('.absolute-cover.bg-main-dark')
+
+
+let delay = 8;
+let duration = .4
+let transition = Power4.easeInOut;
+
+
+let menuTL = gsap.timeline({
+  paused: true
+});
+menuTL
+.to (menuBg, {scaleX: 1, force3D: false, duration: .4 , transition: Power4.easeInOut}).to(menuLinks, {y: 0, stagger: 0.05}, .2)
+.to(linkContainer, {y: 0, stagger: 0.05}, .4)
+
+
+const openMenu = () => {
+  let trigger = document.querySelector('.menu-trigger');
+  trigger.addEventListener('click', ()=> {
+    menu.classList.remove('o-0');
+    menu.classList.remove('pointers-none');
+
+    menuTL.play();
+
+  })
+}
+
+
+const closeMenu = () => {
+  let trigger = document.querySelector('.close-menu');
+
+  trigger.addEventListener('click', ()=> {
+    menuTL.reverse();
+    setTimeout(() => {
+      menu.classList.add('o-0');
+      menu.classList.add('pointers-none');
+    }, 1200);
+   
+  })
+}
+
+closeMenu();
+openMenu();
+
 
 
 const Menu = () => {
@@ -302,8 +403,79 @@ const animateProductImages = () => {
   });
 };
 
+const faq = () => {
+  const faq = document.querySelectorAll('.faq-item');
+  let categories = document.querySelectorAll('.faq-category');
+
+
+    faq.forEach(q => {
+      let isExpanded = q.getAttribute('area-expanded');
+      q.addEventListener('click', (e)=> {
+        console.log(isExpanded)
+        let answer = q.querySelector('.faq-answer');
+        let answerContent = answer.querySelector('p');
+        let arrow = q.querySelector('svg');
+
+        let height = answer.querySelector('p').clientHeight ;   
+        console.log(height)
+
+        let faq = gsap.timeline({
+          defaults: {
+            easing: Expo.EaseOut,
+            duration: 0.2,
+          },
+        })
+
+        if (!isExpanded) {
+          faq
+          // .to(arrow, {transform: 'rotate(-90deg)'})
+          .to (answer, { opacity: 0})  
+          .to (answerContent, {marginTop: '0px', marginBottom: "0px"}, 0)
+          .to (answer, {maxHeight: "0", opacity: 0}, 0.15)
+        
+            console.log('reverse')
+            isExpanded = true;  
+        } else {
+          faq
+          // .to(arrow, {transform: 'rotate(0deg)'})
+          .to (answer, {maxHeight: height})
+          .to (answer, { opacity: 1}, 0.3)
+          .to (answerContent, {marginTop: '10px', marginBottom: "10px"}, 0)
+          isExpanded = false;  
+        }          
+      })
+    })
+
+
+  const filters = document.querySelectorAll('.faq-filter h2');
+
+  // Filter cat on click
+  filters.forEach((filter) => {
+    let cat = filter.getAttribute('id');
+
+    filter.addEventListener('click', () => {
+      categories.forEach((q) => {
+        let faqCat = q.getAttribute('faq-cat');
+        q.style.display = 'none';
+        if (faqCat === cat) {
+          q.style.display = '';
+        } else if (cat === 'Ver Todas') {
+          q.style.display = '';
+        } else {
+          q.style.display = 'none';
+        }
+      });
+    });
+  });
+};
+
 if (pageName.classList.contains('home')) {
   blends();
+
+// if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent)) {
+  homeVideo();
+// }
+
 } else if (pageName.classList.contains('shop')) {
   imageProducts();
   shopColor();
@@ -334,6 +506,8 @@ if (pageName.classList.contains('home')) {
       .to(productForm, {opacity: 1, y: '0px'}, 0.4);
 
 
+} else if (pageName.classList.contains('faq')) {
+  faq();
 }
 
 
@@ -532,3 +706,19 @@ runScripts();
 window.addEventListener('resize', () => {
  realHeight();
 });
+
+
+// function myFunction() {
+//   // Get the text field
+//   let copyText = document.getElementById("cbu");
+
+//   // Select the text field
+//   copyText.select();
+//   copyText.setSelectionRange(0, 99999); // For mobile devices
+
+//    // Copy the text inside the text field
+//   navigator.clipboard.writeText(copyText.value);
+
+//   // Alert the copied text
+//   alert("Copied the text: " + copyText.value);
+// }

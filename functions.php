@@ -51,6 +51,8 @@ if ( ! function_exists( 'noddenhus_setup' ) ) :
 		register_nav_menus(
 			array(
 				'menu-1' => esc_html__( 'Primary', 'noddenhus' ),
+				'menu-2' => esc_html__( 'Mobile', 'noddenhus' ),
+
 			)
 		);
 
@@ -167,7 +169,6 @@ function noddenhus_scripts() {
 		wp_enqueue_script( 'comment-reply' );
 	}
 
-	wp_enqueue_script( 'noddenhus-main', get_template_directory_uri() . '/js/main.js',  array( 'jquery' ), '0.5.2' , true);
 
 
 
@@ -175,9 +176,17 @@ function noddenhus_scripts() {
 
 	// wp_enqueue_script( 'noddenhus-prefetch', get_template_directory_uri() . '/js/barba-prefetch.js',  array( 'jquery' ), '0.5.2' , true);
 
-	// wp_enqueue_script( 'noddenhus-gsap', get_template_directory_uri() . '/js/gsap.js',  array( 'jquery' ), '0.5.2' , true);
+	wp_enqueue_script( 'noddenhus-gsap', get_template_directory_uri() . '/js/gsap.js',  array( 'jquery' ), '0.5.2' , true);
 
 	wp_enqueue_script( 'noddenhus-gsap-text', get_template_directory_uri() . '/js/gsap-text.js',  array( 'jquery' ), '0.5.2' , true);
+
+
+	if (is_checkout()) {
+			wp_enqueue_script( 'autofill-checkout', get_template_directory_uri() . '/js/autofill-checkout.js',  array( 'jquery' ), '1.3');
+	}
+
+
+	wp_enqueue_script( 'noddenhus-main', get_template_directory_uri() . '/js/main.js',  array( 'jquery' ), '0.5.2' , true);
 
 	
 }
@@ -239,9 +248,224 @@ remove_action('woocommerce_single_product_summary','woocommerce_template_single_
 
 remove_action('woocommerce_single_product_summary','woocommerce_template_single_meta', 40);
 
-
 remove_action ('woocommerce_after_single_product_summary', 'woocommerce_output_product_data_tabs',10 );
 
+function autofill_checkout_fields_by_postcode(){
+
+	global $wpdb;
+	$postcode = $_POST['postcode'];
+    $results = $wpdb->get_results( "SELECT provincia, codigo, localidad FROM {$wpdb->prefix}localidades WHERE cp = " . $postcode );
+    
+    if ($results){
+        // Asumiendo que un CP solo corresponde a una provincia. El primer valor ya es suficiente.
+        $provincia = $results[0]->provincia;
+        $codigo = $results[0]->codigo;
+        $data = [];
+        array_push($data,$provincia,$codigo);
+        foreach ( $results as $row )
+            {
+               array_push($data,$row->localidad);
+            }
+        echo json_encode($data, JSON_UNESCAPED_UNICODE);
+    }
+    
+    die();
+}
+
+add_action( 'wp_ajax_nopriv_autofill_checkout_fields_by_postcode', 'autofill_checkout_fields_by_postcode' );
+add_action( 'wp_ajax_autofill_checkout_fields_by_postcode', 'autofill_checkout_fields_by_postcode' );
 
 
 
+add_action( 'woocommerce_cart_calculate_fees', 'discount_based_on_user_role', 20, 1 );
+function discount_based_on_user_role( $cart ) {
+    if ( is_admin() && ! defined( 'DOING_AJAX' ) )
+        return; // Exit
+
+    // Only for 'company' user role
+    if ( ! current_user_can('administrator') )
+        return; // Exit
+
+    // HERE define the percentage discount
+    $percentage = 100;
+
+    $discount = $cart->get_subtotal() * $percentage / 100; // Calculation
+
+    // Applying discount
+    $cart->add_fee( sprintf( __("Discount (%s)", "woocommerce"), $percentage . '%'), -$discount, true );
+}
+
+
+add_action( 'woocommerce_thankyou', 'letsgo_auto_processing_orders');
+function letsgo_auto_processing_orders( $order_id ) {
+if ( ! $order_id )
+return;
+$order = wc_get_order( $order_id );
+//ID’s de las pasarelas de pago a las que afecta
+$paymentMethods = array( 'woo-mercado-pago-basic' );
+if ( !in_array( $order->payment_method, $paymentMethods ) ) return;
+// If order is “pending” update status to “processing”
+if( $order->has_status( 'pending' ) ) {
+$order->update_status( 'processing' );
+} }
+
+add_filter('woocommerce_update_order_review_fragments', 'order_fragments_split_shipping', 10, 1);
+function order_fragments_split_shipping($order_fragments) {
+
+	if (is_checkout){
+		ob_start();
+		woocommerce_order_review_shipping_split();
+		$woocommerce_order_review_shipping_split = ob_get_clean();
+		$order_fragments['.checkout-review-shipping-table'] =$woocommerce_order_review_shipping_split;
+		return $order_fragments;
+	}
+
+}
+
+function woocommerce_order_review_shipping_split( $deprecated = false ) {
+	wc_get_template( 'checkout/shipping-review.php', array( 'checkout' => WC()->checkout() ) );
+}
+
+add_filter('gettext', 'woo_translations', 20, 3);
+add_filter('ngettext', 'woo_translations', 20, 3);
+function woo_translations( $translation, $text, $domain ) {
+        
+    $custom_text = array(
+        'Ingresá tu dirección para ver las opciones de envío.' => '',
+    );
+
+    if( array_key_exists( $translation, $custom_text ) ) {
+        $translation = $custom_text[$translation];
+    }
+    return $translation;
+}
+
+function implement_ajax_apply_coupon() {
+
+    global $woocommerce;
+
+    //$code = $_REQUEST['coupon_code'];
+    $code = filter_input( INPUT_POST, 'coupon_code', FILTER_DEFAULT );
+
+    if( empty( $code ) || !isset( $code ) ) {
+        $response = array(
+            'result'    => 'error',
+            'message'   => 'Code text field can not be empty.'
+        );
+
+        header( 'Content-Type: application/json' );
+        echo json_encode( $response );
+
+        exit();
+    }
+
+    $coupon = new WC_Coupon( $code );
+
+    if( ! $coupon->id && ! isset( $coupon->id ) ) {
+        $response = array(
+            'result'    => 'error',
+            'message'   => 'Código invalido. Por favor reintente.'
+        );
+
+        header( 'Content-Type: application/json' );
+        echo json_encode( $response );
+
+        exit();
+
+    } else {
+          if ( ! empty( $code ) && ! WC()->cart->has_discount( $code ) ){
+            WC()->cart->add_discount( $code );
+            $response = array(
+                'result'    => 'success',
+                'message'   => 'Se agregó correctamente.'
+            );
+
+            header( 'Content-Type: application/json' );
+            echo json_encode( $response );
+
+            exit();
+        }
+    }
+}
+
+add_action('wp_ajax_ajaxapplycoupon', 'implement_ajax_apply_coupon');
+add_action('wp_ajax_nopriv_ajaxapplycoupon', 'implement_ajax_apply_coupon');
+
+add_filter( 'woocommerce_package_rates', 'rates_by_zone_weight', 10, 2 );
+function rates_by_zone_weight($rates, $package)
+{
+	global $woocommerce;
+	
+	// REGIONES
+	$regional = array('C', 'B', 'S', 'X');
+	$nacional = array('K', 'H', 'W', 'E', 'P', 'Y', 'L', 'F', 'M', 'N', 'A', 'J', 'D', 'G', 'T', 'U', 'R', 'Z', 'V');
+
+	// TOTALES CARRITO
+	$total = WC()->cart->cart_contents_total;
+	$peso_total = WC()->cart->get_cart_contents_weight();
+	
+	// COSTO CAJA
+	if ($peso_total > 15){ // CAJA HASTA 20KG
+		$costo_caja = 265; 
+	} else if ($peso_total > 10){ // CAJA HASTA 15KG
+ 		$costo_caja = 215;
+	} else if ($peso_total > 5){ // CAJA HASTA 10KG
+		$costo_caja = 125;
+	} else if ($peso_total > 2){ // CAJA HASTA 5KG
+		$costo_caja = 75;
+	} else if ($peso_total > 1){ // CAJA HASTA 2KG
+		$costo_caja = 65;
+	} else if ($peso_total > 0){ // CAJA HASTA 1KG
+		$costo_caja = 55;
+	}
+	
+	// TARIFAS REGIONAL
+	if (in_array(WC()->customer->get_shipping_state(), $regional)) {
+		if ($peso_total > 20 && $peso_total < 25){ // HASTA 25KG
+			$tarifa = 1620; 
+		} else if ($peso_total > 15){ // HASTA 20KG
+			$tarifa = 1330;
+		} else if ($peso_total > 10){ // HASTA 15KG
+			$tarifa = 1110;
+		} else if ($peso_total > 5){ // HASTA 10KG
+			$tarifa = 910;
+		} else if ($peso_total > 1){ // HASTA 5KG
+			$tarifa = 730;
+		} else if ($peso_total > 0){ // HASTA 1KG
+			$tarifa = 600;
+		}
+	// TARIFAS NACIONAL
+	} else if (in_array(WC()->customer->get_shipping_state(), $nacional)){
+		if ($peso_total > 20 && $peso_total < 25){ // HASTA 25KG
+			$tarifa = 2370; 
+		} else if ($peso_total > 15){ // HASTA 20KG
+			$tarifa = 1970;
+		} else if ($peso_total > 10){ // HASTA 15KG
+			$tarifa = 1680;
+		} else if ($peso_total > 5){ // HASTA 10KG
+			$tarifa = 1360;
+		} else if ($peso_total > 1){ // HASTA 5KG
+			$tarifa = 1020;
+		} else if ($peso_total > 0){ // HASTA 1KG
+			$tarifa = 830;
+		}
+	}
+	
+	foreach ($rates as $rate) {
+		if ($rate->label == 'Envío a domicilio por Correo Argentino') {
+			$rate->cost = $tarifa + $costo_caja;
+		}
+	}
+
+	return $rates;
+}
+
+add_action( 'woocommerce_before_cart', 'bbloomer_print_cart_weight' );
+function bbloomer_print_cart_weight() {
+   $notice = 'Your cart weight is: ' . WC()->cart->get_cart_contents_weight() . get_option( 'woocommerce_weight_unit' );
+   if ( is_cart() ) {
+      wc_print_notice( $notice, 'notice' );
+   } else {
+      wc_add_notice( $notice, 'notice' );
+   }
+}

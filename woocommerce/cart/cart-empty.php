@@ -20,12 +20,17 @@ defined( 'ABSPATH' ) || exit;
 /*
  * @hooked wc_empty_cart_message - 10
  */
-do_action( 'woocommerce_cart_is_empty' );
+// do_action( 'woocommerce_cart_is_empty' ); 
+?>
+<div class="pb6">
+	<h1 class="tc mv5 mb2">Tu carrito está vacío</h1>
+	<?php if ( wc_get_page_id( 'shop' ) > 0 ) : ?>
+		<p class="return-to-shop tc f0">
+			<a class="main-font f3 mb4 button wc-backward black no-deco has-after" href="<?php echo esc_url( apply_filters( 'woocommerce_return_to_shop_redirect', wc_get_page_permalink( 'shop' ) ) ); ?>">
+				<?php esc_html_e( 'Return to shop', 'woocommerce' ); ?>
+			</a>
+		</p>
+	<?php endif; ?>
 
-if ( wc_get_page_id( 'shop' ) > 0 ) : ?>
-	<p class="return-to-shop">
-		<a class="button wc-backward" href="<?php echo esc_url( apply_filters( 'woocommerce_return_to_shop_redirect', wc_get_page_permalink( 'shop' ) ) ); ?>">
-			<?php esc_html_e( 'Return to shop', 'woocommerce' ); ?>
-		</a>
-	</p>
-<?php endif; ?>
+</div>
+

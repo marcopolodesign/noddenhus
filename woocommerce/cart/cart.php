@@ -66,11 +66,9 @@ do_action( 'woocommerce_before_cart' ); ?>
 								<div class="cart-product-content pv4 flex items-center justify-between">
 									<div class="product-thumbnail">
 										<?php
-										$thumbnail = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key );
-
-										$botella = get_field('botella', $product_id ); ?> 
+										$thumbnail = apply_filters( 'woocommerce_cart_item_thumbnail', $_product->get_image(), $cart_item, $cart_item_key ); ?> 
 										
-										<img class="cart-botella" src=<?php echo $botella;?> >
+										<img class="cart-botella" src=<?php echo $thumbnail; ?> 
 									</div>
 									<div class="cart-product-text flex w-80-ns justify-between items-center">
 
@@ -78,13 +76,6 @@ do_action( 'woocommerce_before_cart' ); ?>
 
 												<h2 class="product-name f2 lh1" data-title="<?php esc_attr_e( 'Product', 'woocommerce' ); ?>">
 													<?php echo $_product->get_title(); ?></h2>
-
-
-													<?php if (get_field('varietal', $product_id ) === "Malbec" || get_field('varietal', $product_id ) === "Chardonnay" || get_field('varietal', $product_id ) === "Cabernet Franc"):	?>
-													<p class="cart-product-varietal lh1 mt1"><?php the_field('varietal', $product_id ); ?> </p>
-													<?php else : ?>
-														<p class="cart-product-varietal lh1 mt1"><span id='cart-product-varietal'></span>Malbec</p>
-													<?php endif;?>
 											</div>
 
 											<?php	do_action( 'woocommerce_after_cart_item_name', $cart_item, $cart_item_key );

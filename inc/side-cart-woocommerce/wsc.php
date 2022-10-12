@@ -85,7 +85,7 @@ function wsc_add_to_cart_ajax(){
 		// print notice
 		ob_start();
 		foreach( $error as $value ) {
-			wc_print_notice( $value, 'error' );
+			// wc_print_notice( $value, 'error' );
 		}
 
 		$js_data =  array(
@@ -118,7 +118,7 @@ function update_cart_ajax(){
 
 	//If empty return error
 	if(!$cart_key){
-		wp_send_json(array('error' => __('Something went wrong','miranda-bosch')));
+		// wp_send_json(array('error' => __('Producto Agregado!','noddenhus')));
 	}
 	
 	$cart_success = WC()->cart->set_quantity( $cart_key, $new_qty ); 
@@ -128,7 +128,7 @@ function update_cart_ajax(){
 	}
 	else{
 		if(wc_notice_count('error') > 0){
-    		echo wc_print_notices();
+			echo wc_print_notices();
 		}
 	}
 	die();
@@ -143,65 +143,6 @@ function enqueue_styles() {
 	wp_enqueue_style( $wsc, get_template_directory_uri() . '/inc/side-cart-woocommerce/css/wsc-public.css', array(), $version, 'all' );
 
 }
-
-function implement_ajax_apply_coupon() {
-
-    global $woocommerce;
-
-    // Get the value of the coupon code
-    //$code = $_REQUEST['coupon_code'];
-    $code = filter_input( INPUT_POST, 'coupon_code', FILTER_DEFAULT );
-
-    // Check coupon code to make sure is not empty
-    if( empty( $code ) || !isset( $code ) ) {
-        // Build our response
-        $response = array(
-            'result'    => 'error',
-            'message'   => 'Code text field can not be empty.'
-        );
-
-        header( 'Content-Type: application/json' );
-        echo json_encode( $response );
-
-        // Always exit when doing ajax
-        exit();
-    }
-
-    // Create an instance of WC_Coupon with our code
-    $coupon = new WC_Coupon( $code );
-
-    // Check coupon to make determine if its valid or not
-    if( ! $coupon->id && ! isset( $coupon->id ) ) {
-        // Build our response
-        $response = array(
-            'result'    => 'error',
-            'message'   => 'Invalid code entered. Please try again.'
-        );
-
-        header( 'Content-Type: application/json' );
-        echo json_encode( $response );
-
-        // Always exit when doing ajax
-        exit();
-
-    } else {
-          if ( ! empty( $code ) && ! WC()->cart->has_discount( $code ) ){
-            WC()->cart->add_discount( $code ); // apply the coupon discount
-            // Build our response
-            $response = array(
-                'result'    => 'success',
-                'message'   => 'successfully added coupon code'
-            );
-
-            header( 'Content-Type: application/json' );
-            echo json_encode( $response );
-
-            // Always exit when doing ajax
-            exit();
-        }
-    }
-}
-
 
 /**
  * Register the JavaScript for the public-facing side of the site.

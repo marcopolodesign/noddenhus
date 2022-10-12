@@ -15,7 +15,7 @@
 get_header();
 ?>
 
-	<main id="primary" class="site-main">
+	<main id="primary" class="site-main" data-barba="container"  data-barba-namespace="<?php the_title();?>" header-color="black">
 
 		<?php
 		while ( have_posts() ) :

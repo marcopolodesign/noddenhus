@@ -42,6 +42,8 @@ if ( $related_products ) : ?>
 
 			<?php woocommerce_product_loop_end(); ?>
 
+			<a href="/shop" class="no-deco main-cta w-max cta-font bg-main-light flex center mt3">Volver al shop</a>
+
 	</section>
 
 <?php endif;

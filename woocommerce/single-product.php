@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 <?php get_header(); ?>
-	<div data-barba="container" data-barba-namespace="product" class="product" header-color="white">
+	<main data-barba="container" data-barba-namespace="product" class="product" header-color="white">
 
 		<?php
 			/**
@@ -60,7 +60,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 			 */
 			// do_action( 'woocommerce_sidebar' );
 		?>
-	</div>
+	</main>
 <?php get_footer();
 
 

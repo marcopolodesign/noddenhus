@@ -25,38 +25,34 @@ if ( empty( $product ) || ! $product->is_visible() ) {
 } ?>
 
 
-<div class="is-product in-grid w-30-ns mv4 <?php the_title();?>"<?php wc_product_class( '', $product ); 
+<div class="is-product relative in-grid w-30-ns mv4 <?php the_title();?>"<?php wc_product_class( '', $product ); 
 	$mainImage = get_field('main_image');
 	$image1 = get_field('image_1');
 	$image2 = get_field('image_2');
+	$hasBg = get_field('product_bg_color');
+
+	$variable = get_field('custom_link');
+	$link = get_permalink();
 ?>>
-
-			<?php	$variable = get_field('custom_link');
-			$link = get_permalink();
-			?>
-
-			<a href="
-				<?php
-					if (get_field('custom_link')) : echo the_field('custom_link');
-					else : echo $link; 
-					endif;	?>"
-				class="flex flex-column center black no-deco">
-				<div class="product-main-img">
-					<img src='<?php the_post_thumbnail_url('full'); ?>'>
-				</div>
-			
-				<div class="flex flex-column items-center justify-between pa4 pt0">
-					<div>
-						<h2 class="f2 domaine black tc"><?php the_title();?></h2>
-						<p class="mt1 f6 tc black"><?php echo wp_trim_words( get_the_content(), 21 , '...' ); ?></p>
-					</div>
-
-					<div class="inline-flex">
-						<p class="no-deco main-cta w-max cta-font bg-main-light flex center mt3">Comprar</p>
-					</div>
-				</div>
-			</a>
+		
+	<a href="<?php 	if (get_field('custom_link')) : echo the_field('custom_link');
+			else : echo $link; 	endif;	?>"
+		class="flex flex-column center black no-deco">
+		<div class="product-main-img">
+			<img src='<?php the_post_thumbnail_url('full'); ?>'>
+		</div>
 	
+		<div class="flex flex-column items-center justify-between pa4 pt0">
+			<div>
+				<h2 class="f2 domaine black tc"><?php the_title();?></h2>
+				<p class="mt1 f6 tc black"><?php echo wp_trim_words( get_the_content(), 21 , '...' ); ?></p>
+			</div>
 
-	
+			<div class="inline-flex">
+				<p class="no-deco main-cta w-max cta-font bg-main-light flex center mt3">Comprar</p>
+			</div>
+		</div>
+	</a>
+	<div class="product-color z--1 absolute top-0 left-0 w-100 h-100" style="background-color: <?php echo $hasBg;;?>"></div>
+
 </div>

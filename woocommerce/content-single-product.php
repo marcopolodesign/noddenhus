@@ -77,9 +77,9 @@ $image = wp_get_attachment_url( $thumbnail_id );
 	
 
 
-		<div class="product-info pv7 w-50-ns ph6-ns summary entry-summary">
+		<div class="product-info pv7 w-50-ns ph5-ns summary entry-summary">
 
-			<a class="mb3-ns flex items-center relative back-to-shop has-after black no-deco" href="/shop">
+			<a class="mb3-ns flex items-center relative back-to-shop has-after black no-deco" href="javascript:history.back()">
 				<svg width="25" height="25" class="mr2" viewBox="0 0 31 31" fill="none" xmlns="http://www.w3.org/2000/svg">
 					<path d="M29.9747 15.4941L1.99999 15.494M1.99999 15.494L11.5671 25.0611M1.99999 15.494L11.5671 5.9269" stroke="black" stroke-width="1.5"/></svg>
 				Volver al shop
@@ -88,7 +88,7 @@ $image = wp_get_attachment_url( $thumbnail_id );
 			<div class="flex items-center mt2-ns mb3-ns">
 				<h2 class="f4"><?php the_content();?></h2>
 			</div>
-			<p class="black main-font f2 lh1 fw6 mb3-ns"><span class="f5">$ </span><?php echo $product->price; ?></p>
+			<p class="black product-price main-font f2 lh1 fw6 mb3-ns"><span class="f5">$ </span><?php echo $product->price; ?></p>
 
 			<div class="flex flex-column product-header-info">
 				<!-- <p class="mt2 lh-copy"><?php echo $product->post->post_content ?></p> -->
@@ -177,24 +177,24 @@ $image = wp_get_attachment_url( $thumbnail_id );
 		<div class="flex items-center justify-between container">
 				<div class="shipping-info">
 						<div class="shipping-icon flex">
-							<img class="m-auto" src="/wp-content/uploads/2020/02/Group-702.svg">
+							<!-- <img class="m-auto" src="/wp-content/uploads/2020/02/Group-702.svg"> -->
 						</div>
-						<p class="black">Envío grátis</p>
+						<p class="black">Productos 100% Agroecológicos</p>
 				</div>
 
 				<div class="payment-info">
 						<div class="shipping-icon flex">
-							<img class="m-auto" src="/wp-content/uploads/2020/02/Group-704.svg">
+							<!-- <img class="m-auto" src="/wp-content/uploads/2020/02/Group-704.svg"> -->
 						</div>
 						<p class="black">Pagá con tarjeta de crédito y en cuotas</p>
 				</div>
 
-				<!-- <div class="shipping-info">
+				<div class="shipping-info">
 						<div class="shipping-icon flex">
-							<img class="m-auto" src="/wp-content/uploads/2020/02/Group-705.svg">
+							<!-- <img class="m-auto" src="/wp-content/uploads/2020/02/Group-705.svg"> -->
 						</div>
-						<p class="white">Tiempo de envío de 5 — 7 días</p>
-				</div> -->
+						<p class="black">Yerba Madre Elaborada con palo</p>
+				</div>
 		</div>
 </section>
 
